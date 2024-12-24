@@ -9,6 +9,18 @@ const path = require('path');
 app.use(cors());
 app.use(express.json());
 
+require('dotenv').config();
+const PORT = process.env.PORT || 3001;
+const DATABASE_URL = process.env.DATABASE_URL;
+const JWT_SECRET = process.env.JWT_SECRET;
+
+console.log(`Server running on port ${PORT}`);
+
+app.use(cors({
+    origin: process.env.CLIENT_URL,
+    credentials: true,
+  }));
+  
 // Initialize SQLite database
 const db = new sqlite3.Database('./sunday_school.db', (err) => {
     if (err) {
