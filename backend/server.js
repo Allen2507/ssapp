@@ -7,6 +7,7 @@ const cors = require('cors');
 require('dotenv').config();
 
 // Middleware
+app.options('*', cors()); // Enable CORS for preflight requests
 app.use(cors({
     origin: process.env.CLIENT_URL || 'https://ssdb.netlify.app',
     credentials: true,
