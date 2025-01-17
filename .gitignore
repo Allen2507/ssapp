@@ -14,7 +14,9 @@ Thumbs.db
 
 # Environment variables
 .env
+backend/.env
 
 # Build files
 dist/
 build/
+.gitignore

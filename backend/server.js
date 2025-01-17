@@ -1,45 +1,49 @@
 // Import required modules
 const express = require('express');
-const { Pool } = require('pg');
-const app = express();
+const mysql = require('mysql2/promise');
 const bcrypt = require('bcrypt');
 const cors = require('cors');
 require('dotenv').config();
 
+// Initialize Express app
+const app = express();
+
 // Middleware
 app.options('*', cors()); // Enable CORS for preflight requests
 app.use(cors({
-    origin: process.env.CLIENT_URL || 'https://ssdb.netlify.app',
+    origin: process.env.CLIENT_URL,
     credentials: true,
 }));
 app.use(express.json());
 
 // Environment variables
 const PORT = process.env.PORT || 3001;
-const DATABASE_URL = process.env.DATABASE_URL;
-const JWT_SECRET = process.env.JWT_SECRET;
 
-// PostgreSQL connection pool
-const pool = new Pool({
-    connectionString: DATABASE_URL,
-    ssl: {
-        rejectUnauthorized: false,
-    },
+// MySQL connection pool
+const pool = mysql.createPool({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    port: process.env.DB_PORT || 3306,
 });
 
 // Test the database connection
-pool.query('SELECT NOW()', (err, res) => {
-    if (err) {
-        console.error('Error connecting to PostgreSQL:', err);
-    } else {
-        console.log('Connected to PostgreSQL at:', res.rows[0].now);
+(async () => {
+    try {
+        const connection = await pool.getConnection();
+        console.log('Connected to MySQL database.');
+        connection.release();
+    } catch (err) {
+        console.error('Error connecting to MySQL:', err);
     }
-});
+})();
 
+// Function to create tables if not exist
 const createTablesIfNotExist = async () => {
     const createChildrenProfilesTable = `
     CREATE TABLE IF NOT EXISTS children_profiles (
-        id SERIAL PRIMARY KEY,
+        id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(100),
         dob DATE,
         age INT,
@@ -72,15 +76,16 @@ const createTablesIfNotExist = async () => {
 
     const createAttendanceTable = `
     CREATE TABLE IF NOT EXISTS attendance (
-        id SERIAL PRIMARY KEY,
-        student_id INT REFERENCES children_profiles(id),
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        student_id INT,
         attendance_date DATE,
-        status VARCHAR(20)
+        status VARCHAR(20),
+        FOREIGN KEY (student_id) REFERENCES children_profiles(id)
     )`;
 
     const createTeacherProfilesTable = `
     CREATE TABLE IF NOT EXISTS teacher_profiles (
-        id SERIAL PRIMARY KEY,
+        id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(100),
         age INT,
         address TEXT,
@@ -92,17 +97,19 @@ const createTablesIfNotExist = async () => {
 
     const createUsersTable = `
     CREATE TABLE IF NOT EXISTS users (
-        id SERIAL PRIMARY KEY,
+        id INT AUTO_INCREMENT PRIMARY KEY,
         username VARCHAR(100) UNIQUE,
         password VARCHAR(255)
     )`;
 
     try {
-        await pool.query(createChildrenProfilesTable);
-        await pool.query(createAttendanceTable);
-        await pool.query(createTeacherProfilesTable);
-        await pool.query(createUsersTable);
-        console.log('Tables are ready');
+        const connection = await pool.getConnection();
+        await connection.query(createChildrenProfilesTable);
+        await connection.query(createAttendanceTable);
+        await connection.query(createTeacherProfilesTable);
+        await connection.query(createUsersTable);
+        console.log('Tables are ready.');
+        connection.release();
     } catch (err) {
         console.error('Error creating tables:', err);
     }
@@ -121,7 +128,7 @@ const calculateAge = (dob) => {
     return age;
 };
 
-// Endpoint to add a child profile with age calculation
+// Example Endpoint: Add a child profile
 app.post('/children_profile_form', async (req, res) => {
     const {
         name, dob, gender, religion, denomination, baptism_date, holy_spirit_date,
@@ -132,172 +139,80 @@ app.post('/children_profile_form', async (req, res) => {
 
     const age = calculateAge(dob);
 
-    const query = `INSERT INTO children_profiles (
+    const query = `
+    INSERT INTO children_profiles (
         name, dob, age, gender, religion, denomination, baptism_date, holy_spirit_date,
         doa, standard, medium, admission_number, location, address, student_mobile_1, student_mobile_2,
         father_name, father_religion, father_denomination, father_baptism_date, father_holy_spirit_date, father_mobile,
         mother_name, mother_religion, mother_denomination, mother_baptism_date, mother_holy_spirit_date, mother_mobile
-    ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27
-    ) RETURNING *`;
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
     try {
-        const result = await pool.query(query, [
+        const connection = await pool.getConnection();
+        const [result] = await connection.query(query, [
             name, dob, age, gender, religion, denomination, baptism_date, holy_spirit_date,
             doa, standard, medium, admission_number, location, address, student_mobile_1, student_mobile_2,
             father_name, father_religion, father_denomination, father_baptism_date, father_holy_spirit_date, father_mobile,
             mother_name, mother_religion, mother_denomination, mother_baptism_date, mother_holy_spirit_date, mother_mobile
         ]);
-        res.json({ data: result.rows[0], message: 'Child profile created successfully' });
+        connection.release();
+        res.json({ data: result, message: 'Child profile created successfully' });
     } catch (err) {
-        console.error('PostgreSQL error:', err);
+        console.error('MySQL error:', err);
         res.status(400).json({ error: err.message });
     }
 });
 
-// Endpoint to add attendance
-app.post('/attendance', async (req, res) => {
-    const { student_id, attendance_date, status } = req.body;
-
-    const query = `INSERT INTO attendance (student_id, attendance_date, status) VALUES ($1, $2, $3) RETURNING *`;
-
-    try {
-        const result = await pool.query(query, [student_id, attendance_date, status || 'Present']);
-        res.json({ data: result.rows[0], message: 'Attendance recorded successfully' });
-    } catch (err) {
-        console.error('PostgreSQL error:', err);
-        res.status(400).json({ error: err.message });
-    }
-});
-
-// Endpoint to get attendance by standard
-app.get('/attendance_by_standard', async (req, res) => {
-    const { standard, attendance_date } = req.query;
-
-    const query = `
-        SELECT c.id, c.name, a.status 
-        FROM children_profiles c
-        LEFT JOIN attendance a 
-        ON c.id = a.student_id AND a.attendance_date = $1
-        WHERE c.standard = $2
-    `;
-
-    try {
-        const result = await pool.query(query, [attendance_date, standard]);
-        res.json(result.rows);
-    } catch (err) {
-        console.error('PostgreSQL error:', err);
-        res.status(400).json({ error: err.message });
-    }
-});
-
-// Endpoint to get all children profiles
-app.get('/children_profiles', async (req, res) => {
-    const query = 'SELECT * FROM children_profiles';
-
-    try {
-        const result = await pool.query(query);
-        res.json(result.rows);
-    } catch (err) {
-        console.error('PostgreSQL error:', err);
-        res.status(400).json({ error: err.message });
-    }
-});
-
-// Endpoint to get a child profile by admission number
-app.get('/child_profile/:admission_number', async (req, res) => {
-    const admission_number = req.params.admission_number;
-    const query = 'SELECT * FROM children_profiles WHERE admission_number = $1';
-
-    try {
-        const result = await pool.query(query, [admission_number]);
-        res.json(result.rows[0]);
-    } catch (err) {
-        console.error('PostgreSQL error:', err);
-        res.status(400).json({ error: err.message });
-    }
-});
-
-// Endpoint to get teacher profiles
-app.get('/teacher_profiles', async (req, res) => {
-    const query = 'SELECT * FROM teacher_profiles';
-
-    try {
-        const result = await pool.query(query);
-        res.json(result.rows);
-    } catch (err) {
-        console.error('PostgreSQL error:', err);
-        res.status(400).json({ error: err.message });
-    }
-});
-
-// Endpoint for user login
-app.post('/login', async (req, res) => {
-    const { username, password } = req.body;
-
-    const query = 'SELECT * FROM users WHERE username = $1';
-
-    try {
-        const result = await pool.query(query, [username]);
-        const user = result.rows[0];
-
-        if (!user) {
-            return res.status(401).send('Invalid credentials');
-        }
-
-        const passwordMatch = await bcrypt.compare(password, user.password);
-        if (!passwordMatch) {
-            console.log('Wrong Password');
-            return res.status(401).send('Invalid credentials');
-        }
-
-        // Generate a fake token (use JWT in production)
-        const token = 'example-token'; // Replace with JWT for real apps
-        res.json({ token });
-        console.log('User logged in:', user.username);
-    } catch (err) {
-        console.error('PostgreSQL error:', err);
-        res.status(500).json({ error: err.message });
-    }
-});
-
+// Register a new user
 app.post('/register', async (req, res) => {
+    const { username, password } = req.body;
+    if (!username || !password) {
+        return res.status(400).json({ error: 'Username and password are required' });
+    }
+    try {
+        // Check if the username already exists
+        const [rows] = await pool.query('SELECT id FROM users WHERE username = ?', [username]);
+        if (rows.length > 0) {
+            return res.status(409).json({ error: 'Username already exists' });
+        }
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(password, 10);
+        // Insert the new user into the database
+        const [result] = await pool.query(
+            'INSERT INTO users (username, password) VALUES (?, ?)',
+            [username, hashedPassword]
+        );
+        res.status(201).json({ message: 'User registered successfully', userId: result.insertId });
+    } catch (err) {
+        console.error('Error registering user:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Login a user
+app.post('/login', async (req, res) => {
     const { username, password } = req.body;
 
     if (!username || !password) {
         return res.status(400).json({ error: 'Username and password are required' });
     }
-
     try {
-        // Check if username already exists
-        const userCheck = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
-        if (userCheck.rows.length > 0) {
-            return res.status(400).json({ error: 'Username already exists' });
+        // Check if the user exists
+        const [rows] = await pool.query('SELECT id, password FROM users WHERE username = ?', [username]);
+        if (rows.length === 0) {
+            return res.status(401).json({ error: 'Invalid username or password' });
         }
-
-        // Hash the password
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        // Insert new user into the database
-        const result = await pool.query(
-            'INSERT INTO users (username, password) VALUES ($1, $2) RETURNING id, username',
-            [username, hashedPassword]
-        );
-
-        // Return the newly created user
-        res.status(201).json({
-            message: 'User registered successfully',
-            user: result.rows[0],
-        });
-    } catch (error) {
-        console.error('Error registering user:', error);
+        const user = rows[0];
+        // Compare the provided password with the stored hashed password
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({ error: 'Invalid username or password' });
+        }
+        res.status(200).json({ message: 'Login successful', userId: user.id });
+    } catch (err) {
+        console.error('Error logging in user:', err);
         res.status(500).json({ error: 'Internal server error' });
     }
-});
-
-// Welcome endpoint
-app.get('/', (req, res) => {
-    res.send('Welcome to the Sunday School App API');
 });
 
 // Start the server
