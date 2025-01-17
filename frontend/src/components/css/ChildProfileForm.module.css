@@ -1,0 +1,90 @@
+/* Container */
+.container {
+  max-width: 60%;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h2, h3 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* Success/Error messages */
+p {
+  font-size: 14px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+p[style*="color: green"] {
+  font-weight: bold;
+  background-color: #e6ffe6;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+p[style*="color: red"] {
+  font-weight: bold;
+  background-color: #ffe6e6;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+/* Form Group */
+.form_group {
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.form_group label {
+  width: 35%;
+  font-weight: bold;
+  color: #555;
+}
+
+.form_group input,
+.form_group select {
+  width: 70%;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+input[type="tel"] {
+  width: 70%;
+}
+
+/* Form sections for Father and Mother */
+h3 {
+  background-color: #e0e0e0;
+  padding: 10px;
+  margin-top: 20px;
+  border-radius: 5px;
+}
+
+/* Button */
+button {
+  display: flex;
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  justify-content: center;
+  align-items: center;
+}
+
+.submit{
+  width: 100%;
+  justify-content: space-around;
+  display:flex;
+}
