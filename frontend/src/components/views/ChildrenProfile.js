@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../css/viewChildProfiles.module.css';
+import styles from '../css/viewChildProfiles.module.css';
 
 const ViewChildProfiles = () => {
   const [childrenProfiles, setChildrenProfiles] = useState([]);
@@ -44,35 +44,49 @@ const ViewChildProfiles = () => {
   };
 
   return (
-    <div className="child-profiles-container">
-      <h2>View Child Profile</h2>
-      {Object.keys(profilesByStandard).length === 0 && <p>No profiles to display.</p>}
-      {Object.keys(profilesByStandard).map((standard) => {
-        console.log('Rendering accordion for Standard:', standard);
-        return (
-          <div key={standard} className="accordion">
-            <div className="accordion-header" onClick={() => toggleAccordion(standard)}>
-              <h3>Standard {standard}</h3>
-            </div>
-            {expandedStandard === standard && (
-              <div className="accordion-body">
-                <ul>
-                  {profilesByStandard[standard].map((child) => (
-                    <li
-                      key={child.id}
-                      onClick={() => handleChildClick(child.id)}
-                      className="child-name"
-                    >
-                      {child.name}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+    <div className={styles.child_profiles_container}>
+  <h2>View Child Profile</h2>
+  {Object.keys(profilesByStandard).length === 0 && <p>No profiles to display.</p>}
+  {Object.keys(profilesByStandard).map((standard) => {
+    console.log('Rendering accordion for Standard:', standard);
+    return (
+      <div key={standard} className="accordion" id='accordion'>
+      <div className="accordion-item">
+        <div className="accordion-header" onClick={() => toggleAccordion(standard)}>
+          <button className='accordion-button' type='button' data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded='true' aria-controls='collapseOne'> 
+          <h3 className={styles.accordion_head}>Standard {standard}</h3>
+          </button>
+        </div>
+        {expandedStandard === standard && (
+          <div id='collapseOne' className='accordion-collapse collapse show' data-bs-parent='#accordion'>
+          <div className="accordion-body">
+            <table className={styles.child_profile_table}>
+              <thead>
+                <tr>
+                  <th>Admission Number</th>
+                  <th>Name</th>
+                  <th>Medium</th>
+                </tr>
+              </thead>
+              <tbody>
+                {profilesByStandard[standard].map((child) => (
+                  <tr key={child.id} onClick={() => handleChildClick(child.id)} className="child-row">
+                    <td>{child.admission_number}</td>
+                    <td>{child.name}</td>
+                    <td>{child.medium}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        );
-      })}
-    </div>
+          </div>
+        )}
+        </div>
+      </div>
+    );
+  })}
+</div>
+
   );
 };
 

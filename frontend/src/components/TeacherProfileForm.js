@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import styles from './css/teacherProfileForm.module.css';
 
 const TeacherProfileForm = () => {
   const [formData, setFormData] = useState({ name: '', age: '',address: '',mobileNumber1: '',mobileNumber2: '',baptismDate: '',holySpiritDate: ''});
@@ -54,40 +55,81 @@ const TeacherProfileForm = () => {
 
   //UI Source Start
   return (
-    <div>
+    <div className={styles.teacherProfileContainer}>
       <h2>Create Teacher Profile</h2>
-      {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
-      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+      {successMessage && <p className={styles.successMessage}>{successMessage}</p>}
+      {errorMessage && <p className={styles.errorMessage}>{errorMessage}</p>}
       <form onSubmit={handleSubmit}>
-        <div>
+        <div className={styles.formGroup}>
           <label>Name: </label>
-          <input type="text" name="name" value={formData.name} onChange={handleChange} required/>
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            required
+          />
         </div>
-        <div>
+        <div className={styles.formGroup}>
           <label>Age: </label>
-          <input type="number" name="age" value={formData.age} onChange={handleChange} required/>
+          <input
+            type="number"
+            name="age"
+            value={formData.age}
+            onChange={handleChange}
+            required
+          />
         </div>
-        <div>
+        <div className={styles.formGroup}>
           <label>Address: </label>
-          <input type="text" name="address" value={formData.address} onChange={handleChange} required/>
+          <input
+            type="text"
+            name="address"
+            value={formData.address}
+            onChange={handleChange}
+            required
+          />
         </div>
-        <div>
+        <div className={styles.formGroup}>
           <label>Mobile Number 1: </label>
-          <input type="tel" name="mobileNumber1" value={formData.mobileNumber1} onChange={handleChange} required/>
+          <input
+            type="tel"
+            name="mobileNumber1"
+            value={formData.mobileNumber1}
+            onChange={handleChange}
+            required
+          />
         </div>
-        <div>
+        <div className={styles.formGroup}>
           <label>Mobile Number 2: </label>
-          <input type="tel" name="mobileNumber2" value={formData.mobileNumber2} onChange={handleChange}/>
+          <input
+            type="tel"
+            name="mobileNumber2"
+            value={formData.mobileNumber2}
+            onChange={handleChange}
+          />
         </div>
-        <div>
+        <div className={styles.formGroup}>
           <label>Date of Baptism: </label>
-          <input type="date" name="baptismDate" value={formData.baptismDate} onChange={handleChange}/>
+          <input
+            type="date"
+            name="baptismDate"
+            value={formData.baptismDate}
+            onChange={handleChange}
+          />
         </div>
-        <div>
+        <div className={styles.formGroup}>
           <label>Date of Holy Spirit: </label>
-          <input type="date" name="holySpiritDate" value={formData.holySpiritDate} onChange={handleChange}/>
+          <input
+            type="date"
+            name="holySpiritDate"
+            value={formData.holySpiritDate}
+            onChange={handleChange}
+          />
         </div>
-        <button type="submit">Create Teacher Profile</button>
+        <button type="submit" className={styles.submitButton}>
+          Create Teacher Profile
+        </button>
       </form>
     </div>
   );

@@ -20,3 +20,5 @@ backend/.env
 dist/
 build/
 .gitignore
+
+Sunday_School.bat

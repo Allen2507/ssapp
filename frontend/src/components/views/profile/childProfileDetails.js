@@ -21,6 +21,11 @@ const ChildProfileDetails = () => {
     fetchChildProfile();
   }, [childId]);
 
+const formatDate = (date) => {
+  const formatDate = new Date(date);
+  return formatDate.toLocaleDateString('en-GB');
+};
+
   if (!childProfile) {
     return <p>Loading child profile...</p>;
   }
@@ -32,11 +37,11 @@ const ChildProfileDetails = () => {
         <h3>Personal Details</h3>
         <p>Name: {childProfile.name}</p>
         <p>Gender: {childProfile.gender}</p>
-        <p>DOB: {childProfile.dob}</p>
+        <p>DOB: {formatDate(childProfile.dob)}</p>
         <p>Religion: {childProfile.religion}</p>
         <p>Denomination: {childProfile.denomination}</p>
-        <p>Baptism Date: {childProfile.baptism_date}</p>
-        <p>Holy Spirit Date: {childProfile.holy_spirit_date}</p>
+        <p>Baptism Date: {formatDate(childProfile.baptism_date)}</p>
+        <p>Holy Spirit Date: {formatDate(childProfile.holy_spirit_date)}</p>
       </div>
       <div className="profile-section">
         <h3>Contact Details</h3>

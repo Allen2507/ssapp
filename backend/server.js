@@ -156,6 +156,7 @@ app.post('/children_profile_form', async (req, res) => {
             mother_name, mother_religion, mother_denomination, mother_baptism_date, mother_holy_spirit_date, mother_mobile
         ]);
         connection.release();
+        console.log(`[${new Date().toLocaleTimeString()}] Data saved to the database`);
         res.json({ data: result, message: 'Child profile created successfully' });
     } catch (err) {
         console.error('MySQL error:', err);
@@ -212,6 +213,54 @@ app.post('/login', async (req, res) => {
     } catch (err) {
         console.error('Error logging in user:', err);
         res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+app.get('/children_profiles', async (req, res) => {
+    try {
+        const [rows] = await pool.query('SELECT id,name,standard,admission_number,medium FROM children_profiles');
+        res.json({ data: rows });
+    } catch (err) {
+        console.error('MySQL error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.get('/child_profile/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const [rows] = await pool.query('SELECT * FROM children_profiles WHERE id = ?', [id]);
+        if (rows.length === 0) {
+            return res.status(404).json({ error: 'Child profile not found' });
+        }
+        res.json({ data: rows[0] });
+    } catch (err) {
+        console.error('MySQL error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/teacher_profiles' , async (req, res) => {
+    const { name, age, address, mobile_1, mobile_2, baptism_date, holy_spirit_date } = req.body;
+    const query = `INSERT INTO teacher_profiles (name, age, address, mobile_1, mobile_2, baptism_date, holy_spirit_date) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+    try {
+        const connection = await pool.getConnection();
+        const [result] = await connection.query(query, [name, age, address, mobile_1, mobile_2, baptism_date, holy_spirit_date]);
+        connection.release();
+        res.json({ data: result, message: 'Teacher profile created successfully' });
+    } catch (err) {
+        console.error('MySQL error:', err);
+        res.status(400).json({ error: err.message });
+    }
+});
+
+app.get('/teacher_profile_view', async (req, res) => {
+    try {
+        const [rows] = await pool.query('SELECT * FROM teacher_profiles');
+        res.json({ data: rows });
+    } catch (err) {
+        console.error('MySQL error:', err);
+        res.status(500).json({ error: err.message });
     }
 });
 

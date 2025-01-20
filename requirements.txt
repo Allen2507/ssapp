@@ -1,0 +1,11 @@
+axios
+bootstrap
+cors
+react
+react-dom
+react-router-dom
+react-scripts
+bcrypt
+dotenv
+express
+mysql2

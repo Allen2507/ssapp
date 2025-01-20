@@ -154,8 +154,8 @@ const ChildrenProfileForm = () => {
           <label>Baptism Date </label>
           <input
             type="date"
-            name="baptismDate"
-            value={formData.baptism_date}
+            name="baptism_date"
+            value={formData.baptismDate}
             onChange={handleChange}
             required
           />
@@ -165,8 +165,8 @@ const ChildrenProfileForm = () => {
           <label>Holy Spirit Date </label>
           <input
             type="date"
-            name="holySpiritDate"
-            value={formData.holy_spirit_date}
+            name="holy_spirit_date"
+            value={formData.holySpiritDate}
             onChange={handleChange}
             required
           />
@@ -185,13 +185,28 @@ const ChildrenProfileForm = () => {
 
         <div className={styles.form_group}>
           <label>Standard </label>
-          <input
+          <select
             type="text"
             name="standard"
             value={formData.standard}
             onChange={handleChange}
             required
-          />
+          >
+            <option value="">Select Standard</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="Senior 1st Year">Senior 1st Year</option>
+            <option value="Senior Second Year">Senior 2nd Year</option>
+          </select>
         </div>
 
         <div className={styles.form_group}>
@@ -212,8 +227,8 @@ const ChildrenProfileForm = () => {
           <label>Admission Number </label>
           <input
             type="text"
-            name="admissionNumber"
-            value={formData.admission_number}
+            name="admission_number"
+            value={formData.admissionNumber}
             onChange={handleChange}
             required
           />
@@ -245,8 +260,8 @@ const ChildrenProfileForm = () => {
           <label>Student Mobile 1 </label>
           <input
             type="tel"
-            name="studentMobile1"
-            value={formData.student_mobile_1}
+            name="student_mobile_1"
+            value={formData.studentMobile1}
             onChange={handleChange}
             required
           />
@@ -256,8 +271,8 @@ const ChildrenProfileForm = () => {
           <label>Student Mobile 2 </label>
           <input
             type="tel"
-            name="studentMobile2"
-            value={formData.student_mobile_2}
+            name="student_mobile_2"
+            value={formData.studentMobile2}
             onChange={handleChange}
             required
           />
@@ -269,8 +284,8 @@ const ChildrenProfileForm = () => {
           <label>Father's Name </label>
           <input
             type="text"
-            name="fatherName"
-            value={formData.father_name}
+            name="father_name"
+            value={formData.fatherName}
             onChange={handleChange}
             required
           />
@@ -280,8 +295,8 @@ const ChildrenProfileForm = () => {
           <label>Father's Religion </label>
           <input
             type="text"
-            name="fatherReligion"
-            value={formData.father_religion}
+            name="father_religion"
+            value={formData.fatherReligion}
             onChange={handleChange}
             required
           />
@@ -291,8 +306,8 @@ const ChildrenProfileForm = () => {
           <label>Father's Denomination </label>
           <input
             type="text"
-            name="fatherDenomination"
-            value={formData.father_denomination}
+            name="father_denomination"
+            value={formData.fatherDenomination}
             onChange={handleChange}
             required
           />
@@ -302,8 +317,8 @@ const ChildrenProfileForm = () => {
           <label>Father's Baptism Date </label>
           <input
             type="date"
-            name="fatherBaptismDate"
-            value={formData.father_baptism_date}
+            name="father_baptism_date"
+            value={formData.fatherBaptismDate}
             onChange={handleChange}
             required
           />
@@ -313,8 +328,8 @@ const ChildrenProfileForm = () => {
           <label>Father's Holy Spirit Date </label>
           <input
             type="date"
-            name="fatherHolySpiritDate"
-            value={formData.father_holy_spirit_date}
+            name="father_holy_spirit_date"
+            value={formData.fatherHolySpiritDate}
             onChange={handleChange}
             required
           />
@@ -324,8 +339,8 @@ const ChildrenProfileForm = () => {
           <label>Father's Mobile </label>
           <input
             type="tel"
-            name="fatherMobile"
-            value={formData.father_mobile}
+            name="father_mobile"
+            value={formData.fatherMobile}
             onChange={handleChange}
             required
           />
@@ -337,8 +352,8 @@ const ChildrenProfileForm = () => {
           <label>Mother's Name </label>
           <input
             type="text"
-            name="motherName"
-            value={formData.mother_name}
+            name="mother_name"
+            value={formData.motherName}
             onChange={handleChange}
             required
           />
@@ -348,8 +363,8 @@ const ChildrenProfileForm = () => {
           <label>Mother's Religion </label>
           <input
             type="text"
-            name="motherReligion"
-            value={formData.mother_religion}
+            name="mother_religion"
+            value={formData.motherReligion}
             onChange={handleChange}
             required
           />
@@ -359,8 +374,8 @@ const ChildrenProfileForm = () => {
           <label>Mother's Denomination </label>
           <input
             type="text"
-            name="motherDenomination"
-            value={formData.mother_denomination}
+            name="mother_denomination"
+            value={formData.motherDenomination}
             onChange={handleChange}
             required
           />
@@ -370,8 +385,8 @@ const ChildrenProfileForm = () => {
           <label>Mother's Baptism Date </label>
           <input
             type="date"
-            name="motherBaptismDate"
-            value={formData.mother_baptism_date}
+            name="mother_baptism_date"
+            value={formData.motherBaptismDate}
             onChange={handleChange}
             required
           />
@@ -381,8 +396,8 @@ const ChildrenProfileForm = () => {
           <label>Mother's Holy Spirit Date </label>
           <input
             type="date"
-            name="motherHolySpiritDate"
-            value={formData.mother_holy_spirit_date}
+            name="mother_holy_spirit_date"
+            value={formData.motherHolySpiritDate}
             onChange={handleChange}
             required
           />
@@ -392,8 +407,8 @@ const ChildrenProfileForm = () => {
           <label>Mother's Mobile </label>
           <input
             type="tel"
-            name="motherMobile"
-            value={formData.mother_mobile}
+            name="mother_mobile"
+            value={formData.motherMobile}
             onChange={handleChange}
             required
           />

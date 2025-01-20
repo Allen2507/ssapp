@@ -7,9 +7,9 @@ const TeacherProfileView = () => {
   useEffect(() => {
     const fetchTeacherProfiles = async () => {
       try {
-        const response = await fetch('http://localhost:3001/teacher_profiles'); // Updated API call
+        const response = await fetch('http://localhost:3001/teacher_profile_view'); // Updated API call
         const data = await response.json();
-        setTeacherProfiles(data); // Set the fetched data in state
+        setTeacherProfiles(data.data || []); // Set the fetched data in state
       } catch (error) {
         console.error('Error fetching teacher profiles:', error);
       }
@@ -21,7 +21,6 @@ const TeacherProfileView = () => {
   return (
     <div>
       <h2>Teacher Profiles</h2>
-
       {/* Display the teacher profiles in a table */}
       {teacherProfiles.length > 0 ? (
         <table border="1" cellPadding="10">
@@ -42,10 +41,10 @@ const TeacherProfileView = () => {
                 <td>{teacher.name}</td>
                 <td>{teacher.age}</td>
                 <td>{teacher.address}</td>
-                <td>{teacher.mobile_1}</td> {/* Match backend field */}
-                <td>{teacher.mobile_2}</td> {/* Match backend field */}
-                <td>{teacher.baptism_date}</td> {/* Match backend field */}
-                <td>{teacher.holy_spirit_date}</td> {/* Match backend field */}
+                <td>{teacher.mobile_1}</td>
+                <td>{teacher.mobile_2}</td> 
+                <td>{teacher.baptism_date}</td> 
+                <td>{teacher.holy_spirit_date}</td> 
               </tr>
             ))}
           </tbody>

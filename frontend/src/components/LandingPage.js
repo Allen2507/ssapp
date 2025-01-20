@@ -18,7 +18,7 @@ const LandingPage = () => {
   };
 
   const handleViewTeacherProfile = () => {
-    navigate('/view-teacher-profiles');
+    navigate('/teacher_profile_view');
   };
 
   const handleAttendanceClick = () => {
@@ -38,8 +38,8 @@ const LandingPage = () => {
       <button onClick={handleCreateTeacherProfile}>Create Teacher Profile</button><br/>
       <button onClick={handleViewChildProfile}>View Child Profiles</button><br/>
       <button onClick={handleViewTeacherProfile}>View Teacher Profiles</button><br/>
-      <button onClick={handleAttendanceClick}>Mark Attendance</button><br/>
-      <button onClick={handleViewAttendance}>View Attendance</button>
+      {/* <button onClick={handleAttendanceClick}>Mark Attendance</button><br/>
+      <button onClick={handleViewAttendance}>View Attendance</button> */}
     </div>
   );
   // UI Source End
