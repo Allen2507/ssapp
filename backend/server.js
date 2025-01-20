@@ -5,21 +5,17 @@ const bcrypt = require('bcrypt');
 const cors = require('cors');
 require('dotenv').config();
 
-// Initialize Express app
 const app = express();
 
-// Middleware
-app.options('*', cors()); // Enable CORS for preflight requests
+app.options('*', cors()); 
 app.use(cors({
     origin: process.env.CLIENT_URL,
     credentials: true,
 }));
 app.use(express.json());
 
-// Environment variables
 const PORT = process.env.PORT || 3001;
 
-// MySQL connection pool
 const pool = mysql.createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -28,7 +24,6 @@ const pool = mysql.createPool({
     port: process.env.DB_PORT || 3306,
 });
 
-// Test the database connection
 (async () => {
     try {
         const connection = await pool.getConnection();
@@ -39,7 +34,6 @@ const pool = mysql.createPool({
     }
 })();
 
-// Function to create tables if not exist
 const createTablesIfNotExist = async () => {
     const createChildrenProfilesTable = `
     CREATE TABLE IF NOT EXISTS children_profiles (
