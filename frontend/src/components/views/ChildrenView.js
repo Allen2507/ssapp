@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from '../css/viewChildProfiles.module.css';
+import '../css/accordion/accordion.css';
 
-const ViewChildProfiles = () => {
+const ChildrenView = () => {
   const [childrenProfiles, setChildrenProfiles] = useState([]);
   const [expandedStandard, setExpandedStandard] = useState(null);
   const navigate = useNavigate();
@@ -51,10 +52,12 @@ const ViewChildProfiles = () => {
     console.log('Rendering accordion for Standard:', standard);
     return (
       <div key={standard} className="accordion" id='accordion'>
-      <div className="accordion-item">
+      <div className="accordion-item ">
         <div className="accordion-header" onClick={() => toggleAccordion(standard)}>
-          <button className='accordion-button' type='button' data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded='true' aria-controls='collapseOne'> 
-          <h3 className={styles.accordion_head}>Standard {standard}</h3>
+          <button className='accordion-button' id='accordion-button' type='button' data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded='true' aria-controls='collapseOne'> 
+          <h3 className={styles.accordion_head}>
+            {standard >= "1" && standard <= "11" ? `Standard ${standard}` : standard}
+          </h3>
           </button>
         </div>
         {expandedStandard === standard && (
@@ -90,4 +93,4 @@ const ViewChildProfiles = () => {
   );
 };
 
-export default ViewChildProfiles;
+export default ChildrenView;

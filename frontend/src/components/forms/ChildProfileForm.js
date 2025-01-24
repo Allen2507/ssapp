@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import styles from "./css/ChildProfileForm.module.css";
+import styles from "../css/ChildProfileForm.module.css";
 
 const ChildrenProfileForm = () => {
   const [formData, setFormData] = useState({
@@ -186,7 +186,6 @@ const ChildrenProfileForm = () => {
         <div className={styles.form_group}>
           <label>Standard </label>
           <select
-            type="text"
             name="standard"
             value={formData.standard}
             onChange={handleChange}
@@ -205,10 +204,10 @@ const ChildrenProfileForm = () => {
             <option value="10">10</option>
             <option value="11">11</option>
             <option value="Senior 1st Year">Senior 1st Year</option>
-            <option value="Senior Second Year">Senior 2nd Year</option>
+            <option value="Senior 2nd Year">Senior 2nd Year</option>
           </select>
         </div>
-
+        
         <div className={styles.form_group}>
           <label>Medium </label>
           <select

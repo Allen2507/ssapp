@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import '../../css/childProfileDetails.module.css';
+import { useParams, useNavigate } from 'react-router-dom';
+import styles from '../../css/childProfileDetails.module.css';
 
 const ChildProfileDetails = () => {
   const { childId } = useParams();
   const [childProfile, setChildProfile] = useState(null);
+  const navigate = useNavigate();
+  const[isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    // Fetch the details of the child from the backend based on admission number (childId)
     const fetchChildProfile = async () => {
       try {
         const response = await fetch(`http://localhost:3001/child_profile/${childId}`);
         const data = await response.json();
         setChildProfile(data.data);
+        console.log('Child Profile:', data.data);
       } catch (error) {
         console.error('Error fetching child profile:', error);
       }
@@ -20,6 +22,36 @@ const ChildProfileDetails = () => {
 
     fetchChildProfile();
   }, [childId]);
+
+  const handleDeleteClick = () => {
+    setIsModalOpen(true);
+  };
+
+  const confirmDelete = () => {
+    handleDelete();
+    setIsModalOpen(false);
+  };
+
+  const cancelDelete = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleDelete = async () => {
+  
+    try {
+      const response = await fetch(`http://localhost:3001/child_profile/${childId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete profile');
+      }
+      alert('Profile deleted successfully!');
+      navigate('/child-profiles'); // Redirect to the list of profiles
+    } catch (error) {
+      console.error('Error deleting profile:', error);
+      alert('An error occurred while deleting the profile.');
+    }
+  };
 
 const formatDate = (date) => {
   const formatDate = new Date(date);
@@ -31,41 +63,177 @@ const formatDate = (date) => {
   }
 
   return (
-    <div className="child-profile-details">
-      <h2>{childProfile.name}'s Profile</h2>
-      <div className="profile-section">
-        <h3>Personal Details</h3>
-        <p>Name: {childProfile.name}</p>
-        <p>Gender: {childProfile.gender}</p>
-        <p>DOB: {formatDate(childProfile.dob)}</p>
-        <p>Religion: {childProfile.religion}</p>
-        <p>Denomination: {childProfile.denomination}</p>
-        <p>Baptism Date: {formatDate(childProfile.baptism_date)}</p>
-        <p>Holy Spirit Date: {formatDate(childProfile.holy_spirit_date)}</p>
+    <div className={styles.childProfileDetails}>
+      <h2 className={styles.title}>{childProfile.name}'s Profile</h2>
+      <div className={styles.buttonContainer}>
+        <button className={styles.editButton} onClick={() => navigate(`/edit-child-profiles/${childId}`)}>Edit Profile</button>
+        <button className={styles.deleteButton} onClick={handleDeleteClick}>Delete Profile</button>
       </div>
-      <div className="profile-section">
-        <h3>Contact Details</h3>
-        <p>Address: {childProfile.address}</p>
-        <p>Mobile 1: {childProfile.student_mobile_1}</p>
-        <p>Mobile 2: {childProfile.student_mobile_2}</p>
-      </div>
-      <div className="profile-section">
-        <h3>Academic Details</h3>
-        <p>Standard: {childProfile.standard}</p>
-        <p>Medium: {childProfile.medium}</p>
-        <p>Admission Number: {childProfile.admission_number}</p>
-        <p>Location: {childProfile.location}</p>
-      </div>
-      <div className="profile-section">
-        <h3>Father's Details</h3>
-        <p>Name: {childProfile.father_name}</p>
-        <p>Mobile: {childProfile.father_mobile}</p>
-      </div>
-      <div className="profile-section">
-        <h3>Mother's Details</h3>
-        <p>Name: {childProfile.mother_name}</p>
-        <p>Mobile: {childProfile.mother_mobile}</p>
-      </div>
+      <table className={styles.profileTable}>
+        <thead>
+          <tr>
+            <th colSpan="2">Personal Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Name</td>
+            <td>{childProfile.name}</td>
+          </tr>
+          <tr>
+            <td>Gender</td>
+            <td>{childProfile.gender}</td>
+          </tr>
+          <tr>
+            <td>DOB</td>
+            <td>{formatDate(childProfile.dob)}</td>
+          </tr>
+          <tr>
+            <td>Age</td>
+            <td>{childProfile.age}</td>
+          </tr>
+          <tr>
+            <td>Religion</td>
+            <td>{childProfile.religion}</td>
+          </tr>
+          <tr>
+            <td>Denomination</td>
+            <td>{childProfile.denomination}</td>
+          </tr>
+          <tr>
+            <td>Baptism Date</td>
+            <td>{formatDate(childProfile.baptism_date)}</td>
+          </tr>
+          <tr>
+            <td>Holy Spirit Date</td>
+            <td>{formatDate(childProfile.holy_spirit_date)}</td>
+          </tr>
+        </tbody>
+        <thead>
+          <tr>
+            <th colSpan="2">Contact Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Address</td>
+            <td>{childProfile.address}</td>
+          </tr>
+          <tr>
+            <td>Mobile 1</td>
+            <td>{childProfile.student_mobile_1}</td>
+          </tr>
+          <tr>
+            <td>Mobile 2</td>
+            <td>{childProfile.student_mobile_2}</td>
+          </tr>
+        </tbody>
+        <thead>
+          <tr>
+            <th colSpan="2">Academic Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Standard</td>
+            <td>{childProfile.standard}</td>
+          </tr>
+          <tr>
+            <td>Medium</td>
+            <td>{childProfile.medium}</td>
+          </tr>
+          <tr>
+            <td>Admission Number</td>
+            <td>{childProfile.admission_number}</td>
+          </tr>
+          <tr>
+            <td>Admission Date</td>
+            <td>{formatDate(childProfile.doa)}</td>
+          </tr>
+          <tr>
+            <td>Location</td>
+            <td>{childProfile.location}</td>
+          </tr>
+        </tbody>
+        <thead>
+          <tr>
+            <th colSpan="2">Father's Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Name</td>
+            <td>{childProfile.father_name}</td>
+          </tr>
+          <tr>
+            <td>Mobile</td>
+            <td>{childProfile.father_mobile}</td>
+          </tr>
+          <tr>
+            <td>Religion</td>
+            <td>{childProfile.father_religion}</td>
+          </tr>
+          <tr>
+            <td>Denomination</td>
+            <td>{childProfile.father_denomination}</td>
+          </tr>
+          <tr>
+            <td>Baptism Date</td>
+            <td>{formatDate(childProfile.father_baptism_date)}</td>
+          </tr>
+          <tr>
+            <td>Holy Spirit Date</td>
+            <td>{formatDate(childProfile.father_holy_spirit_date)}</td>
+          </tr>
+        </tbody>
+        <thead>
+          <tr>
+            <th colSpan="2">Mother's Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Name</td>
+            <td>{childProfile.mother_name}</td>
+          </tr>
+          <tr>
+            <td>Mobile</td>
+            <td>{childProfile.mother_mobile}</td>
+          </tr>
+          <tr>
+            <td>Religion</td>
+            <td>{childProfile.mother_religion}</td>
+          </tr>
+          <tr>
+            <td>Denomination</td>
+            <td>{childProfile.mother_denomination}</td>
+          </tr>
+          <tr>
+            <td>Baptism Date</td>
+            <td>{formatDate(childProfile.mother_baptism_date)}</td>
+          </tr>
+          <tr>
+            <td>Holy Spirit Date</td>
+            <td>{formatDate(childProfile.mother_holy_spirit_date)}</td>
+          </tr>
+        </tbody>
+      </table>
+      {isModalOpen && (
+        <div className={styles.modalBackdrop}>
+          <div className={styles.modal}>
+            <h3>Confirm Deletion</h3>
+            <p>Are you sure you want to delete this profile?</p>
+            <div className={styles.modalButtonContainer}>
+              <button className={styles.confirmButton} onClick={confirmDelete}>
+                Delete
+              </button>
+              <button className={styles.cancelButton} onClick={cancelDelete}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

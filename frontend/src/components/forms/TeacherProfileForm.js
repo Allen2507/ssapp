@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import styles from './css/teacherProfileForm.module.css';
+import styles from '../css/teacherProfileForm.module.css';
 
 const TeacherProfileForm = () => {
   const [formData, setFormData] = useState({ name: '', age: '',address: '',mobileNumber1: '',mobileNumber2: '',baptismDate: '',holySpiritDate: ''});
