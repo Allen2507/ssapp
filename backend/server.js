@@ -1,4 +1,3 @@
-// Import required modules
 const express = require('express');
 const mysql = require('mysql2/promise');
 const bcrypt = require('bcrypt');
@@ -22,6 +21,7 @@ const pool = mysql.createPool({
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     port: process.env.DB_PORT || 3306,
+    multipleStatements: true
 });
 
 (async () => {
@@ -39,7 +39,7 @@ const createTablesIfNotExist = async () => {
     CREATE TABLE IF NOT EXISTS children_profiles (
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(100),
-        dob DATE,
+        dob DATE, 
         age INT,
         gender VARCHAR(10),
         religion VARCHAR(50),
@@ -47,7 +47,7 @@ const createTablesIfNotExist = async () => {
         baptism_date DATE,
         holy_spirit_date DATE,
         doa DATE,
-        standard VARCHAR(10),
+        standard VARCHAR(50),
         medium VARCHAR(10),
         admission_number VARCHAR(50),
         location VARCHAR(100),
@@ -96,12 +96,19 @@ const createTablesIfNotExist = async () => {
         password VARCHAR(255)
     )`;
 
+    const createBranchListTable = `
+    CREATE TABLE IF NOT EXISTS branches (
+        ID INT AUTO_INCREMENT PRIMARY KEY,
+        branch_name VARCHAR(100)
+    )`;
+
     try {
         const connection = await pool.getConnection();
         await connection.query(createChildrenProfilesTable);
         await connection.query(createAttendanceTable);
         await connection.query(createTeacherProfilesTable);
         await connection.query(createUsersTable);
+        await connection.query(createBranchListTable);
         console.log('Tables are ready.');
         connection.release();
     } catch (err) {
@@ -110,7 +117,7 @@ const createTablesIfNotExist = async () => {
 };
 createTablesIfNotExist();
 
-// Function to calculate age from DOB
+//Function to calculate age from DOB
 const calculateAge = (dob) => {
     const birthDate = new Date(dob);
     const today = new Date();
@@ -132,7 +139,6 @@ app.post('/children_profile_form', async (req, res) => {
     } = req.body;
 
     const age = calculateAge(dob);
-
     const query = `
     INSERT INTO children_profiles (
         name, dob, age, gender, religion, denomination, baptism_date, holy_spirit_date,
@@ -165,14 +171,11 @@ app.post('/register', async (req, res) => {
         return res.status(400).json({ error: 'Username and password are required' });
     }
     try {
-        // Check if the username already exists
         const [rows] = await pool.query('SELECT id FROM users WHERE username = ?', [username]);
         if (rows.length > 0) {
             return res.status(409).json({ error: 'Username already exists' });
         }
-        // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
-        // Insert the new user into the database
         const [result] = await pool.query(
             'INSERT INTO users (username, password) VALUES (?, ?)',
             [username, hashedPassword]
@@ -184,7 +187,6 @@ app.post('/register', async (req, res) => {
     }
 });
 
-// Login a user
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
 
@@ -192,13 +194,11 @@ app.post('/login', async (req, res) => {
         return res.status(400).json({ error: 'Username and password are required' });
     }
     try {
-        // Check if the user exists
         const [rows] = await pool.query('SELECT id, password FROM users WHERE username = ?', [username]);
         if (rows.length === 0) {
             return res.status(401).json({ error: 'Invalid username or password' });
         }
         const user = rows[0];
-        // Compare the provided password with the stored hashed password
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
             return res.status(401).json({ error: 'Invalid username or password' });
@@ -234,6 +234,105 @@ app.get('/child_profile/:id', async (req, res) => {
     }
 });
 
+app.put('/edit-child-profile/:id', async (req, res) => {
+    const { id } = req.params;
+    const {
+      name,
+      gender,
+      dob,
+      religion,
+      denomination,
+      baptism_date,
+      holy_spirit_date,
+      address,
+      student_mobile_1,
+      student_mobile_2,
+      standard,
+      medium,
+      admission_number,
+      location,
+      father_name,
+      father_mobile,
+      mother_name,
+      mother_mobile,
+    } = req.body;
+  
+    try {
+      const [result] = await pool.query(
+        `UPDATE children_profiles
+         SET name = ?, gender = ?, dob = ?, religion = ?, denomination = ?, baptism_date = ?,
+             holy_spirit_date = ?, address = ?, student_mobile_1 = ?, student_mobile_2 = ?,
+             standard = ?, medium = ?, admission_number = ?, location = ?, father_name = ?,
+             father_mobile = ?, mother_name = ?, mother_mobile = ?
+         WHERE id = ?`,
+        [
+          name,
+          gender,
+          dob,
+          religion,
+          denomination,
+          baptism_date,
+          holy_spirit_date,
+          address,
+          student_mobile_1,
+          student_mobile_2,
+          standard,
+          medium,
+          admission_number,
+          location,
+          father_name,
+          father_mobile,
+          mother_name,
+          mother_mobile,
+          id,
+        ]
+      );
+  
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ error: 'Child profile not found' });
+      }
+  
+      res.json({ message: 'Profile updated successfully' });
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      res.status(500).json({ error: 'Failed to update profile' });
+    }
+  });
+
+app.delete('/child_profile/:id', async (req, res) => {
+    const { id } = req.params;
+  
+    const connection = await pool.getConnection();
+    try {
+      await connection.beginTransaction();
+  
+      const [deleteResult] = await connection.query('DELETE FROM children_profiles WHERE id = ?', [id]);
+      if (deleteResult.affectedRows === 0) {
+        await connection.rollback();
+        return res.status(404).json({ error: 'Child profile not found' });
+      }
+  
+      await connection.query(`
+        SET @new_id = 0;
+        UPDATE children_profiles
+        SET id = (@new_id := @new_id + 1)
+        ORDER BY id;
+      `);
+  
+      await connection.query('ALTER TABLE children_profiles AUTO_INCREMENT = 1');
+  
+      await connection.commit();
+      res.json({ message: 'Child profile deleted and IDs reordered successfully' });
+    } catch (error) {
+      await connection.rollback();
+      console.error('Error deleting child profile:', error);
+      res.status(500).json({ error: 'Failed to delete child profile' });
+    } finally {
+      connection.release();
+    }
+  });
+  
+  
 app.post('/teacher_profiles' , async (req, res) => {
     const { name, age, address, mobile_1, mobile_2, baptism_date, holy_spirit_date } = req.body;
     const query = `INSERT INTO teacher_profiles (name, age, address, mobile_1, mobile_2, baptism_date, holy_spirit_date) VALUES (?, ?, ?, ?, ?, ?, ?)`;
@@ -252,6 +351,20 @@ app.get('/teacher_profile_view', async (req, res) => {
     try {
         const [rows] = await pool.query('SELECT * FROM teacher_profiles');
         res.json({ data: rows });
+    } catch (err) {
+        console.error('MySQL error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.get('/view-teacher-profile/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const [rows] = await pool.query('SELECT * FROM teacher_profiles WHERE id = ?', [id]);
+        if (rows.length === 0) {
+            return res.status(404).json({ error: 'Teacher profile not found' });
+        }
+        res.json({ data: rows[0] });
     } catch (err) {
         console.error('MySQL error:', err);
         res.status(500).json({ error: err.message });

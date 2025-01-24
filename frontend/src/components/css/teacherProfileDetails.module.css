@@ -1,0 +1,56 @@
+.teacherProfileContainer {
+    font-family: Arial, sans-serif;
+    width: 800px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px auto;
+    padding: 20px;
+    justify-content: center;
+  }
+
+  .teacherProfileContainer h2 {
+    font-size: 30px;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+  
+  .profileTable {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px; /* Adds spacing between rows */
+    margin-top: 20px;
+    cursor: default;
+  }
+  
+  .profileTable thead th {
+    background-color: #007bff;
+    color: white;
+    padding: 10px;
+    font-size: 26px;
+    text-align: center;
+    border: none;
+    border-radius: 5px;
+  }
+  
+  .profileTable td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    font-size: 20px;
+    background-color: white;
+  }
+  
+  .backButton {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .backButton:hover {
+    background-color: #0056b3;
+  }
+  

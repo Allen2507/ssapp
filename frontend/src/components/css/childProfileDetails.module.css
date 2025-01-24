@@ -1,14 +1,162 @@
-.child-profile-details {
-    padding: 20px;
-  }
-  
-  .profile-section {
-    margin-bottom: 20px;
-  }
-  
-  .profile-section h3 {
-    margin-bottom: 10px;
-    font-size: 18px;
-    color: #333;
-  }
-  
+.childProfileDetails {
+  max-width: 70vw;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  font-family: 'Arial', sans-serif;
+  font-weight: 600;
+}
+
+.title {
+  text-align: center;
+  color: #333;
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.editButton,
+.deleteButton {
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.editButton {
+  background-color: #007bff;
+}
+
+.editButton:hover {
+  background-color: #0056b3;
+}
+
+.deleteButton {
+  background-color: #dc3545;
+}
+
+.deleteButton:hover {
+  background-color: #b21f33;
+}
+
+.profileTable {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 10px; /* Adds spacing between rows */
+  margin-top: 20px;
+  cursor: default;
+}
+
+.profileTable thead th {
+  background-color: #007bff;
+  color: white;
+  padding: 10px;
+  font-size: 26px;
+  text-align: left;
+  border: none;
+  border-radius: 5px;
+}
+
+.profileTable td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  font-size: 20px;
+  background-color: white;
+}
+
+.profileTable tr:nth-child(even) {
+  background-color: #ececec;
+}
+
+.profileTable tr:hover {
+  background-color: #f1f1f1;
+}
+
+.profileTable thead {
+  margin-top: 20px;
+}
+
+.profileTable thead th:first-child {
+  border-top-left-radius: 5px;
+}
+
+.profileTable thead th:last-child {
+  border-top-right-radius: 5px;
+}
+
+/* Modal Backdrop */
+.modalBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Modal */
+.modal {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  width: 400px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.modal p{
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+/* Modal Buttons */
+.modalButtonContainer {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-around;
+  font-size: 20px;
+}
+
+.confirmButton,
+.cancelButton {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.confirmButton {
+  background-color: #dc3545;
+  color: white;
+}
+
+.confirmButton:hover {
+  background-color: #b21f33;
+}
+
+.cancelButton {
+  background-color: #6c757d;
+  color: white;
+}
+
+.cancelButton:hover {
+  background-color: #5a6268;
+}
