@@ -86,7 +86,10 @@ const createTablesIfNotExist = async () => {
         mobile_1 VARCHAR(15),
         mobile_2 VARCHAR(15),
         baptism_date DATE,
-        holy_spirit_date DATE
+        holy_spirit_date DATE,
+        branch VARCHAR(50),
+        medium VARCHAR(15),
+        standard VARCHAR(50)
     )`;
 
     const createUsersTable = `
@@ -96,19 +99,12 @@ const createTablesIfNotExist = async () => {
         password VARCHAR(255)
     )`;
 
-    const createBranchListTable = `
-    CREATE TABLE IF NOT EXISTS branches (
-        ID INT AUTO_INCREMENT PRIMARY KEY,
-        branch_name VARCHAR(100)
-    )`;
-
     try {
         const connection = await pool.getConnection();
         await connection.query(createChildrenProfilesTable);
         await connection.query(createAttendanceTable);
         await connection.query(createTeacherProfilesTable);
         await connection.query(createUsersTable);
-        await connection.query(createBranchListTable);
         console.log('Tables are ready.');
         connection.release();
     } catch (err) {
@@ -370,6 +366,57 @@ app.get('/view-teacher-profile/:id', async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
+
+app.get('/teacher-assign-view', async (req, res) => {
+    try {
+        const [rows] = await pool.query('SELECT id,name,standard,medium,branch FROM teacher_profiles');
+        res.json({ teachers: rows });
+    } catch (err) {
+        console.error('MySQL error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/assign-teacher', async (req, res) => {
+    const assignments = req.body; // Expect an array of assignment objects from the frontend
+
+    if (!Array.isArray(assignments)) {
+        return res.status(400).json({ error: 'Invalid data format. Expected an array of assignments.' });
+    }
+
+    try {
+        // Create a transaction to update multiple rows safely
+        const connection = await pool.getConnection();
+
+        try {
+            await connection.beginTransaction();
+
+            for (const assignment of assignments) {
+                const { teacherId, branch, standard, medium } = assignment;
+
+                // Update the teacher_profiles table with new values
+                await connection.query(
+                    'UPDATE teacher_profiles SET branch = ?, standard = ?, medium = ? WHERE id = ?',
+                    [branch, standard, medium, teacherId]
+                );
+            }
+
+            await connection.commit();
+            res.json({ message: 'Teachers assigned successfully!' });
+        } catch (error) {
+            await connection.rollback();
+            console.error('Transaction error:', error);
+            res.status(500).json({ error: 'Failed to assign teachers.' });
+        } finally {
+            connection.release();
+        }
+    } catch (error) {
+        console.error('MySQL error:', error);
+        res.status(500).json({ error: 'Database connection error.' });
+    }
+});
+
+  
 
 // Start the server
 app.listen(PORT, () => {
