@@ -82,7 +82,26 @@ const TeacherProfileDetails = () => {
             <td>{formatDate(teacherProfile.holy_spirit_date)}</td>
           </tr>
         </tbody>
-      </table>
+        <thead>
+          <tr>
+            <th colSpan="2">Academic Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Main/Branch:</strong></td>
+            <td>{teacherProfile.branch}</td>
+          </tr>
+          <tr>
+            <td><strong>Standard:</strong></td>
+            <td>{teacherProfile.standard}</td>
+          </tr>
+          <tr>
+            <td><strong>Medium:</strong></td>
+            <td>{teacherProfile.medium}</td>
+          </tr>
+          </tbody>
+          </table>
       <button onClick={() => navigate('/teacher_profile_view')} className={styles.backButton}>Back to List</button>
     </div>
   );

@@ -21,13 +21,10 @@ const LandingPage = () => {
     navigate('/teacher_profile_view');
   };
 
-  const handleAttendanceClick = () => {
-    navigate('/attendance');
+  const handleAssignTeacher = () => {
+    navigate('/assign-teacher');
   };
 
-  const handleViewAttendance = () => {
-    navigate('/view-attendance');
-  };
 
   // UI Source Start
   return (
@@ -38,8 +35,7 @@ const LandingPage = () => {
       <button onClick={handleCreateTeacherProfile}>Create Teacher Profile</button><br/>
       <button onClick={handleViewChildProfile}>View Child Profiles</button><br/>
       <button onClick={handleViewTeacherProfile}>View Teacher Profiles</button><br/>
-      {/* <button onClick={handleAttendanceClick}>Mark Attendance</button><br/>
-      <button onClick={handleViewAttendance}>View Attendance</button> */}
+      <button onClick={handleAssignTeacher}>Assign Teachers</button> 
     </div>
   );
   // UI Source End
